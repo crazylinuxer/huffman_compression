@@ -2,6 +2,9 @@ from typing import BinaryIO
 import sys
 import os
 
+from encoder import Encoder
+from decoder import Decoder
+
 
 def try_open_output_file(input_file_stat) -> BinaryIO:
     try:
@@ -71,7 +74,9 @@ def main() -> None:
         except IsADirectoryError:
             print(f"'{output_file_name}' is a directory")
             exit(1)
-    #complete_firmware_file(output_file, input_file, input_stat.st_size)
+    coder_class = Encoder if compress else Decoder
+    coder = coder_class(input_file, output_file)
+    coder()
     print("Done!")
 
 

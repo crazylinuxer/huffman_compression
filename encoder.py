@@ -3,20 +3,25 @@ from typing import BinaryIO
 from huffman_tree import HuffmanTree
 
 
-BUFFER_SIZE = 1024
+INPUT_BUFFER_SIZE = 1024
+OUTPUT_BUFFER_SIZE = 1024
 
 
 class Encoder:
     def __init__(self, input_file: BinaryIO, output_file: BinaryIO):
-        pass
+        self.input_file = input_file
+        self.output_file = output_file
 
-    def build_tree(self):
+    def generate_header(self):
         pass
 
     def write_header(self):
         pass
 
-    def encode(self, data: bytes):
+    def _encode(self, data: bytes) -> None:
+        pass
+
+    def __call__(self):
         pass
 
     def flush(self):
