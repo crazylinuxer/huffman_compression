@@ -45,7 +45,7 @@ class HuffmanTree:
     @staticmethod
     def _build(heap: List['HuffmanTree.BuildHeapItem']) -> HuffmanNode:
         while len(heap) >= 2:
-            light_node1, light_node2 = heapq.heappop(heap).node, heapq.heappop(heap).node
+            light_node1, light_node2 = (heapq.heappop(heap).node for _ in range(2))
             new_item = HuffmanTree.BuildHeapItem(HuffmanNode(
                 None, light_node1.weight + light_node2.weight, left=light_node2, right=light_node1
             ))

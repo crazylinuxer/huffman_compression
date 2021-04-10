@@ -34,17 +34,16 @@ class Encoder:
     def write_header(self) -> int:
         self.output_file.seek(0)
         self.output_file.write(bytes(0 for _ in range(5)))
-        output_buffer = deque()
         table_length_counter = 0  # bits
         for coding_entry in self.coding_table:
-            fill_deque_from_byte(output_buffer, coding_entry)
+            fill_deque_from_byte(self.encoding_buffer, coding_entry)
             entry_bit_repr = self.coding_table[coding_entry]
-            fill_deque_from_byte(output_buffer, len(entry_bit_repr))
-            output_buffer.extend(entry_bit_repr)
+            fill_deque_from_byte(self.encoding_buffer, len(entry_bit_repr))
+            self.encoding_buffer.extend(entry_bit_repr)
             table_length_counter += 16 + len(entry_bit_repr)
-            if len(output_buffer) >= OUTPUT_BUFFER_FLUSH_SIZE:
-                self.output_file.write(bits_to_bytes(output_buffer))
-        self.output_file.write(bits_to_bytes(output_buffer, flush=True))
+            if len(self.encoding_buffer) >= OUTPUT_BUFFER_FLUSH_SIZE:
+                self.output_file.write(bits_to_bytes(self.encoding_buffer))
+        self.output_file.write(bits_to_bytes(self.encoding_buffer, flush=True))
         self.output_file.flush()
         curr_pos = self.output_file.tell()
         self.output_file.seek(1)
