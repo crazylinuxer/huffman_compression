@@ -42,7 +42,7 @@ def main() -> None:
     input_file_name = sys.argv[1]
     output_file_name = sys.argv[2]
     if not os.path.isfile(input_file_name):
-        print(f"Can not find '{input_file_name}' file", file=sys.stderr)
+        print(f"Can not find '{input_file_name}' file (or it is not a file)", file=sys.stderr)
         exit(1)
     input_file = None
     input_stat = None

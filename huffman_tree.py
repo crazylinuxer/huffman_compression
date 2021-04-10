@@ -51,7 +51,7 @@ class HuffmanTree:
             ))
             light_node1.parent = light_node2.parent = new_item.node
             heapq.heappush(heap, new_item)
-        return heap[0].node
+        return heap[0].node if heap else None
 
     def generate_codes(self) -> Dict[int, Deque[bool]]:
         result = {}
