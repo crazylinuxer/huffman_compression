@@ -81,8 +81,11 @@ def main() -> None:
             exit(1)
     coder_class = Encoder if compress else Decoder
     coder = coder_class(input_file, output_file)
-    coder()
-    print("Done!")
+    try:
+        coder()
+        print("Done!")
+    except RuntimeError as err:
+        print(f"Error: {err.args[0] if isinstance(err.args, tuple) else err.args}")
 
 
 if __name__ == "__main__":

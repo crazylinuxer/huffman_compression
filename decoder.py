@@ -69,18 +69,21 @@ class Decoder:
         :return number of trailing zeros
         """
         self.input_file.seek(0)
-        trailing_zeros = self.input_file.read(1)[0]
+        trailing_zeros = int.from_bytes(self.input_file.read(1), byteorder='little')
         table_size = int.from_bytes(self.input_file.read(4), byteorder='little')
         table_bytes = (table_size // 8) + (table_size % 8 > 0)
         for byte in self.input_file.read(table_bytes):
             fill_deque_from_byte(self.decoding_buffer, byte)
-        for _ in range((table_bytes * 8) - table_size):
-            self.decoding_buffer.pop()
-        while len(self.decoding_buffer) > 16:
-            byte, cipher_len = (int.from_bytes(bits_to_bytes(deque(
-                self.decoding_buffer.popleft() for _ in range(8)
-            )), byteorder='little') for _ in range(2))
-            self.coding_table[BitSequence(self.decoding_buffer.popleft() for _ in range(cipher_len))] = byte
+        try:
+            for _ in range((table_bytes * 8) - table_size):
+                self.decoding_buffer.pop()
+            while len(self.decoding_buffer) > 16:
+                byte, cipher_len = (int.from_bytes(bits_to_bytes(deque(
+                    self.decoding_buffer.popleft() for _ in range(8)
+                )), byteorder='little') for _ in range(2))
+                self.coding_table[BitSequence(self.decoding_buffer.popleft() for _ in range(cipher_len))] = byte
+        except IndexError:
+            raise RuntimeError("Incorrect input file")
         self.decoding_buffer.clear()
         return trailing_zeros
 
@@ -108,7 +111,7 @@ class Decoder:
                     break
                 cipher_storage.append(self.decoding_buffer.popleft())
                 if len(cipher_storage) > 256:
-                    raise RuntimeError("Invalid code size")
+                    raise RuntimeError(f"Invalid code size (code is {hash(BitSequence(cipher_storage))})")
             if stop:
                 break
             output_buffer.append(self.coding_table[BitSequence(cipher_storage, use_given_deque=True)])
