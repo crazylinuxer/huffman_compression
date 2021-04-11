@@ -7,6 +7,11 @@ from decoder import Decoder
 
 
 def try_open_output_file(input_file_stat) -> BinaryIO:
+    """
+    Tries to open fte output file, checking if it is the same file as the input one
+    :param input_file_stat: Data about the input file
+    :return: opened output file
+    """
     try:
         output_file = open(sys.argv[2])
         output_stat = os.fstat(output_file.fileno())
@@ -84,4 +89,4 @@ if __name__ == "__main__":
     try:
         main()
     except (EOFError, KeyboardInterrupt):
-        print("Exit")
+        print("\nExit")

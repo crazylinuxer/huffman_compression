@@ -2,6 +2,12 @@ from typing import Deque
 
 
 def fill_deque_from_byte(destination: Deque[bool], source: int) -> None:
+    """
+    Copies bits from the given byte to the end of given deque
+
+    :param destination: deque to fill
+    :param source: byte to use. If it more than 256, it will use remainder of its division by 256
+    """
     source &= 0xff
     bin_repr = bin(source)[2:]
     for _ in range(8 - len(bin_repr)):

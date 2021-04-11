@@ -1,9 +1,13 @@
-from typing import Dict, Deque, List, Optional
+from typing import Dict, Deque, List, Optional, Hashable
 from collections import deque
 import heapq
 
 
-class HuffmanNode:
+class HuffmanNode(Hashable):
+    """
+    Single node of the Huffman tree
+    """
+
     def __init__(
             self, value: Optional[int], weight: int, parent: 'HuffmanNode' = None,
             left: 'HuffmanNode' = None, right: 'HuffmanNode' = None
@@ -14,19 +18,34 @@ class HuffmanNode:
         self.left = left
         self.right = right
 
-    def __hash__(self):
+    def __hash__(self) -> int:
+        """
+        :return: Sum of ids of other instance pointers plus sum of values hashes
+        """
         return sum(id(i) for i in (self.left, self.right, self.parent)) + hash(self.value) + hash(self.weight)
 
-    def __eq__(self, other: 'HuffmanNode'):
+    def __eq__(self, other: 'HuffmanNode') -> bool:
+        """
+        Compares values and ids of other instance pointers
+        """
         return id(self.left) == id(other.left) and\
-               id(self.right) == id(other.right) and\
-               id(self.parent) == id(other.parent) and\
-               self.value == other.value and\
-               self.weight == other.weight
+            id(self.right) == id(other.right) and\
+            id(self.parent) == id(other.parent) and\
+            self.value == other.value and\
+            self.weight == other.weight
 
 
 class HuffmanTree:
+    """
+    The Huffman tree used to generate a coding table
+    """
+
     class BuildHeapItem:
+        """
+        The item of binary heap which contains the node.
+        The binary heap is used to build the tree effectively.
+        """
+
         def __init__(self, node: HuffmanNode):
             self.node = node
 
@@ -37,6 +56,11 @@ class HuffmanTree:
             return self.node.weight > other.node.weight
 
     def __init__(self, freq_table: Dict[int, int]):
+        """
+        Builds tree from the frequency table
+
+        :param freq_table: dict in which key is byte and value is its count in input file
+        """
         self.leaves = [HuffmanNode(value, freq_table[value]) for value in freq_table]
         build_heap = [self.BuildHeapItem(node) for node in self.leaves]
         heapq.heapify(build_heap)
@@ -44,6 +68,11 @@ class HuffmanTree:
 
     @staticmethod
     def _build(heap: List['HuffmanTree.BuildHeapItem']) -> HuffmanNode:
+        """
+        Builds the tree from the list of leaf nodes, each wrapped by BuildHeapItem
+
+        :return: root node of the tree
+        """
         while len(heap) >= 2:
             light_node1, light_node2 = (heapq.heappop(heap).node for _ in range(2))
             new_item = HuffmanTree.BuildHeapItem(HuffmanNode(
@@ -54,6 +83,9 @@ class HuffmanTree:
         return heap[0].node if heap else None
 
     def generate_codes(self) -> Dict[int, Deque[bool]]:
+        """
+        :return: dict in which key is byte and value is its binary code to replace it with in the output file
+        """
         result = {}
         for leaf in self.leaves:
             leaf_path = deque()
