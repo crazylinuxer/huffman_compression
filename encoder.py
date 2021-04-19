@@ -99,6 +99,6 @@ class Encoder:
 
         :return: additional zero bits in the end of file
         """
-        result = 8 - (len(self.encoding_buffer) % 8)
+        result = (8 - (len(self.encoding_buffer) % 8)) % 8
         self.output_file.write(bits_to_bytes(self.encoding_buffer, flush=True))
         return result
